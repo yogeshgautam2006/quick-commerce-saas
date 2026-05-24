@@ -2,14 +2,14 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
 from pydantic import BaseModel
 import jwt
 from datetime import datetime, timedelta
 import razorpay
+import bcrypt # NAYA AUR SECURE HASHING MODULE
 
 # Hamari files
-import backend.models as models, schemas
+import models, schemas
 from database import engine, SessionLocal
 
 # Database tables automatically create karna
@@ -27,8 +27,8 @@ app.add_middleware(
 )
 
 # --- RAZORPAY SETUP ---
-RAZORPAY_KEY_ID = "rzp_test_Ssjh03MmJgBm5u"         # Apni Test Key yahan daalein
-RAZORPAY_KEY_SECRET = "iwmrW67Y4M3jzUvwvfGwdI6e" # Apni Secret Key yahan daalein
+RAZORPAY_KEY_ID = "rzp_test_Ssjh03MmJgBm5u"         # Apni Test Key
+RAZORPAY_KEY_SECRET = "iwmrW67Y4M3jzUvwvfGwdI6e"    # Apni Secret Key
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 class OrderRequest(BaseModel):
@@ -46,14 +46,18 @@ SECRET_KEY = "my_super_secret_key_for_jwt"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
+# 🌟 DIRECT BCRYPT LOGIC (Passlib Hataya Gaya Hai)
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    # Bcrypt ko string ki jagah bytes chahiye hote hain, isliye encode lagaya hai
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # Securely hash generate karna
+    salt = bcrypt.gensalt()
+    hashed_bytes = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_bytes.decode('utf-8')
 
 def create_access_token(data: dict):
     to_encode = data.copy()
