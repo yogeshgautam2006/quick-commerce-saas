@@ -19,6 +19,14 @@ export default function Navbar({ cartItemCount }) {
         </Link>
         
         <div className="flex gap-4 items-center">
+          
+          {/* NAYA ADD ITEM LINK (Sirf logged in users ko dikhega) 👇 */}
+          {isLoggedIn && (
+            <Link to="/add-item" className="text-gray-700 hover:text-green-600 font-bold px-2 py-2 transition">
+              + Add Item
+            </Link>
+          )}
+
           <Link to="/cart" className="bg-green-100 text-green-800 px-4 py-2 rounded-full font-bold hover:bg-green-200 transition">
             Cart ({cartItemCount})
           </Link>

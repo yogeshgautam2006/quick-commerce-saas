@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import CartPage from './pages/CartPage'
 import Login from './pages/Login'
+import AddProduct from './pages/AddProduct'
 
 function App() {
   const [products, setProducts] = useState([])
@@ -133,6 +134,8 @@ function App() {
           <Route path="/" element={<Home products={products} addToCart={addToCart} />} />
           <Route path="/cart" element={<CartPage cart={cart} cartTotal={cartTotal} handleCheckout={handleCheckout} />} />
           <Route path="/login" element={<Login />} />
+          {/* YAHAN ADD PRODUCT KA ROUTE ADD KIYA GAYA HAI 👇 */}
+          <Route path="/add-item" element={<AddProduct />} />
         </Routes>
       </div>
     </div>
