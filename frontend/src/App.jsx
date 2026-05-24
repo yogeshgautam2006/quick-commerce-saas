@@ -11,7 +11,7 @@ function App() {
 
   // Backend se items fetch karna
   useEffect(() => {
-    fetch('http://localhost:8000/products/')
+    fetch('https://quick-commerce-saas-1.onrender.com')
       .then(res => res.json())
       .then(data => setProducts(data))
   }, [])
