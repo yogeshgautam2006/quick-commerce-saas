@@ -9,11 +9,23 @@ function App() {
   const [products, setProducts] = useState([])
   const [cart, setCart] = useState([])
 
-  // Backend se items fetch karna
+  // Backend se items fetch karna (With Crash-Proof Check)
   useEffect(() => {
-    fetch('https://quick-commerce-saas-1.onrender.com')
+    fetch('https://quick-commerce-saas-1.onrender.com/products/')
       .then(res => res.json())
-      .then(data => setProducts(data))
+      .then(data => {
+        // Check karega ki backend ne list bheji hai ya error
+        if (Array.isArray(data)) {
+          setProducts(data)
+        } else {
+          console.error("Backend ne expected data nahi bheja:", data)
+          setProducts([]) // App crash hone se bachayega
+        }
+      })
+      .catch(err => {
+        console.error("Fetch API Error:", err)
+        setProducts([])
+      })
   }, [])
 
   // Cart mein add karne ka logic
@@ -45,7 +57,7 @@ function App() {
 
     try {
       // Step 1: Razorpay Order ID generate karna
-      const response = await fetch('http://localhost:8000/create-order/', {
+      const response = await fetch('https://quick-commerce-saas-1.onrender.com/create-order/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: cartTotal })
@@ -54,7 +66,7 @@ function App() {
 
       // Step 2: Razorpay Popup settings
       const options = {
-        key: "rzp_test_Ssjh03MmJgBm5u", // <-- YAHAN APNI RAZORPAY TEST KEY ZAROOR DAALEIN
+        key: "rzp_test_Ssjh03MmJgBm5u", // <-- RAZORPAY TEST KEY
         amount: orderData.amount,
         currency: "INR",
         name: "Quick-Commerce Grocery",
@@ -78,7 +90,7 @@ function App() {
 
           try {
             // Database mein order save karne ki API call (With Token)
-            const saveOrderRes = await fetch('http://localhost:8000/save-order/', {
+            const saveOrderRes = await fetch('https://quick-commerce-saas-1.onrender.com/save-order/', {
               method: 'POST',
               headers: { 
                 'Content-Type': 'application/json',

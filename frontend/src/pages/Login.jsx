@@ -17,7 +17,8 @@ export default function Login() {
     formData.append('password', password);
 
     try {
-      const response = await fetch('https://quick-commerce-saas-1.onrender.com', {
+      // URL ke end mein /login/ add kar diya gaya hai
+      const response = await fetch('https://quick-commerce-saas-1.onrender.com/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
